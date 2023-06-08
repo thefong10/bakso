@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="icon" href="img/logo.png">
+    <title>Firada Bakso</title>
+    <style>
+        table,
+        tr,
+        th,
+        td {
+            border: 1px solid black;
+            padding: 5px;
+        }
+    </style>
+</head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/b0655d420a.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
+<body>
+
+    <nav class="bg-white shadow-lg flex justify-between items-center px-5">
+        <div class="flex flex-wrap items-center gap-5 md:gap-0 px-10 mt-10">
+        <img src="img/logo.png" alt="" width="10%" height="10%">
+        <h3 class="font-bold text-amber-900 items-center gap-5 color: #724c17;">Bakso Bacit</h3>
+        </div>
+        <div>
+            <a href="#"class="flex items-center py-4 px-5">
+                <img src="./img/keranjang.png" alt="" class="h-7 w-7">
+            </a>
+        </div>
+    </nav>
+    <header class="flex flex-wrap items-center gap-5 md:gap-0 px-20 mt-10">
+        <div class="flex flex-col">
+            <p>Silahkan Order disini!!!</p>
+            <input id="nama" type="text" placeholder="Isi Nama Bakso..."> 
+            <input id="harga" type="number" placeholder="Isi Harga Bakso..."> 
+            <input id="qty" type="number" placeholder="Isi Jumlah Bakso..."> 
+            <button id="button" onclick="saveData()">Simpan</button>
+        </div>
+    </header>
+        <div class="flex flex-wrap items-center gap-5 md:gap-0 px-20 mt-10" style="margin-top: 10px;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama</th>
+                        <th>Harga</th>
+                        <th>Qty</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="result"></tbody>
+            </table>
+            <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+            <script>
+                const deleteData = async (id) => {
+                    await axios.delete(`https://database.politekniklp3i-tasikmalaya.ac.id/api/bakso/${id}`)
+                    .then((response)=>{
+                        getData();
+                        console.log(`Berhasil DiHapus!`);
+                    })
+                    .catch((error)=>{
+                        console.log(error.message)
+                    });
+                }
+
+                const saveData = async () =>{
+                    let nama = document.getElementById('nama').value;
+                    let harga = document.getElementById('harga').value;
+                    let qty = document.getElementById('qty').value;
+                    await axios.post(`https://database.politekniklp3i-tasikmalaya.ac.id/api/bakso`,{
+                        nama: nama,
+                        harga: harga,
+                        qty: qty
+                    })
+                    .then((response)=>{
+                        getData();
+                        document.getElementById('nama').value = '';
+                        document.getElementById('harga').value = '';
+                        document.getElementById('qty').value = '';
+                        console.log('Berhasil Ditambahkan!');
+                    })
+                    .catch((error)=>{
+                        console.log(error.message);
+                    });
+                }
+   
+                const getData = async () =>{
+                    await axios.get(`https://database.politekniklp3i-tasikmalaya.ac.id/api/bakso`)
+                    .then((response)=>{
+                        let bucket = '';
+                        let bakso = response.data.baksos;
+                        console.log(bakso)
+                        for (let i = 0; i < bakso.length; i++){
+                            bucket += `
+                            <tr>
+                                <td>${i + 1}</td>
+                                <td>${bakso[i].nama}</td>
+                                <td>${bakso[i].harga}</td>
+                                <td>${bakso[i].qty}</td>
+                                <td>
+                                    <button onclick="editData(${bakso[i].id})">Edit</button>
+                                    <button onclick="deleteData(${bakso[i].id})">Delete</button>
+                                </td>
+                            </tr>
+
+                            `
+                        }
+                        document.getElementById('result').innerHTML = bucket
+                    });
+                }
+                getData();
+            </script>
+        </div>
+    
+</body>
+</html>
